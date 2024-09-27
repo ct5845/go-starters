@@ -43,6 +43,7 @@ Air is a `hot reloader` so you can see your changes immediately. Follow steps be
 
 1. Update our [Makefile](./example/Makefile) to watch and compile templates & then run air for hot-reloading;
 
+   `Windows`
    ```make
    .PHONY:build
    build:
@@ -57,6 +58,29 @@ Air is a `hot reloader` so you can see your changes immediately. Follow steps be
       templ generate
       make templ-watch
       air
+   ```
+
+   `Linux`
+   ```make
+   .PHONY:build
+   build:
+      templ generate
+
+   .PHONY:templ-watch
+   templ-watch:
+      templ generate --watch &
+
+   .PHONY:dev
+   dev:
+      make templ-watch
+      air
+   ```
+
+
+1. Now run the dev target to get full hot reloading
+
+   ```bash
+   $ make dev
    ```
 
    Visit the server http://localhost:8080, and make changes in the [hello.templ](./example/libs/ui/hello.templ) and [main.go](./example/main.go) and they should both be reloaded!

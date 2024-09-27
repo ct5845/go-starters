@@ -4,7 +4,7 @@ A Makefile defines a set of tasks to be executed (sorta akin to the `scripts` se
 
 ## Steps
 
-1. Go through the [installation](../INSTALL.md) process.
+1. `windows` Go through the [installation](../INSTALL.md) process.
 1. Run the hello world with;
    ```powershell
    make

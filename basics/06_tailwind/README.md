@@ -4,15 +4,42 @@ In this slightly more invovled example, we're going to bring in Tailwind, which 
 
 ## Steps
 
-1. Create our tailwind config file
+1. Get Tailwind CLI
 
+   `windows x64`
    ```bash
    $ cd example
-   $ tailwindcss init
+   $ curl -L --ssl-no-revoke https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-windows-x64.exe --output ./tailwindcss.exe
+   ```
+
+   `linux x64`
+   ```bash
+   $ cd example
+   $ curl -L --ssl-no-revoke https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64 --output ./tailwindcss
+   $ chmod +x ./tailwindcss
+   ```
+
+1. Create our tailwind config file
+
+   `windows`
+   ```bash
+   $ ./tailwindcss.exe init
+   ```
+
+   `linux`
+   ```bash
+   $ ./tailwindcss init
+   ```
+
+1. Also init air for your local environment
+
+   ```bash
+   $ air init
    ```
 
 1. Alter make file to create tailwind build steps
 
+   `windows`
    ```make
    .PHONY:build
    build:
@@ -34,6 +61,36 @@ In this slightly more invovled example, we're going to bring in Tailwind, which 
    .PHONY:templ-watch
    templ-watch:
       powershell Start-Process -NoNewWindow -FilePath "templ" -ArgumentList "generate", "--watch"
+
+   .PHONY:dev
+   dev:
+      make templ-watch
+      make tailwind-watch
+      air
+   ```
+
+   `linux`
+   ```make
+   .PHONY:build
+   build:
+      make templ-build
+      make tailwind-build
+
+   .PHONY:tailwind-build
+   tailwind-build:
+      ./tailwindcss -i ./static/input.css -o ./static/style.min.css --minify
+
+   .PHONY:tailwind-watch
+   tailwind-watch:
+      nohup   ./tailwindcss -i ./static/input.css -o ./static/style.css --watch &
+
+   .PHONY:templ-build
+   templ-build:
+      templ generate
+
+   .PHONY:templ-watch
+   templ-watch:
+      templ generate --watch &
 
    .PHONY:dev
    dev:
@@ -111,6 +168,18 @@ In this slightly more invovled example, we're going to bring in Tailwind, which 
                   { children... }
             </body>
          </html>
+      }
+      ```
+
+   1. Then update [hello.templ](./example/libs/ui/hello.templ) to use the layout
+
+      ```go
+      package ui
+
+      templ Hello(name string)  {
+         @PageLayout() {
+            <h1 class="text-2xl underline">Hello again {name}!</h1>
+         }
       }
       ```
 

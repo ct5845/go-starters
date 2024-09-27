@@ -9,14 +9,18 @@ You can alternatively look at the `blue-peter` folder for a completed example.
 1. Download and install templ
 
    ```bash
+   $ go install github.com/a-h/templ/cmd/templ@latest
    $ cd example
-   $ go get github.com/a-h-templ
+   $ go get github.com/a-h/templ
    ```
 
 1. Create our first view a basic hello templ
 
    ```bash
-   $ cd libs/ui
+   $ mkdir libs
+   $ cd libs
+   $ mddir ui
+   $ cd ui
    $ touch hello.templ
    ```
 
@@ -56,13 +60,21 @@ You can alternatively look at the `blue-peter` folder for a completed example.
 
    import (
       "04_go_templ/libs/ui"
-      "context"
-      "os"
+      "fmt"
+      "log"
+      "net/http"
+
+      "github.com/a-h/templ"
    )
 
    func main() {
       component := ui.Hello("World!")
-      component.Render(context.Background(), os.Stdout)
+
+      http.Handle("/", templ.Handler(component))
+
+      fmt.Println("Listening on :8080")
+
+      log.Fatal(http.ListenAndServe(":8080", nil))
    }
    ```
 
@@ -71,9 +83,3 @@ You can alternatively look at the `blue-peter` folder for a completed example.
    ```bash
    $ go run .
    ```
-
-1. Edit the `main.go` so we output to a webserver instead
-
-```go
-
-```

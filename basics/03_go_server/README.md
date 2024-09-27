@@ -9,9 +9,9 @@ You can alternatively look at the `blue-peter` folder for a completed example.
 1. Make our directory `$/basics/03_go_server/example`
 
    ```bash
-   cd basics/03-go
-   mkdir example
-   cd example
+   $ cd basics/03-go
+   $ mkdir example
+   $ cd example
    ```
 
 1. Initialise our module (like npm init...) with [`go mod init`](https://go.dev/ref/mod#go-mod-init)
