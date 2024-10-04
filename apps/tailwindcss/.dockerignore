@@ -1,0 +1,9 @@
+README.md
+Makefile
+Dockerfile
+.*ignore
+*.toml
+.env**
+
+.build/
+build/
