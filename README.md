@@ -35,8 +35,8 @@ Combine previous two steps so we have a docker build for our HttpSever
 ### [tailwindcss](./tailwindcss)
 Builds with Tailwindcss integrated
 
-- [ ] Tailwindcss
-- [ ] DaisyUI
+- [x] Tailwindcss
+- [x] DaisyUI
 - Go
 - Live-Reload ([AIR](https://github.com/air-verse/air))
 - Environment Variables ([DotEnv](https://github.com/joho/godotenv))
