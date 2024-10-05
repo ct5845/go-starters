@@ -1,0 +1,7 @@
+{
+  "name": "go-staterers-tailwindcss",
+  "license": "ISC",
+  "devDependencies": {
+    "tailwindcss": "^3.4.13"
+  }
+}
