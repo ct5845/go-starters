@@ -15,7 +15,7 @@ func linkLabel(label string, active string) string {
 
 func link(href string, label string, active string) string {
 	label = linkLabel(label, active)
-	var link = `<li><a href="@href">@label</a></li>`
+	var link = `<li><a class="block border-4 border-double rounded-md p-4" href="@href">@label</a></li>`
 
 	link = strings.Replace(link, "@href", href, 1)
 	link = strings.Replace(link, "@label", label, 1)
@@ -23,16 +23,17 @@ func link(href string, label string, active string) string {
 	return link
 }
 
-func HeaderMolecule(env string, active string) string {
-	h1 := fmt.Sprintf(`<h1>GO Server Docker - %s</h1>`, env)
+func HeaderMolecule(active string) string {
+	h1 := `<h1 class="text-4xl mb-4">GO Website Start</h1>`
+
 	homeLink := link("/", "Home", active)
 	aboutLink := link("/about", "About", active)
 	links := homeLink + aboutLink
 
 	return fmt.Sprintf(`
 		%s
-		<nav>
-			<ul>
+		<nav class="border border-2 p-4 rounded-2xl">
+			<ul class="flex gap-8">
 				%s
 			</ul>
 		</nav>`, h1, links)

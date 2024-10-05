@@ -39,6 +39,6 @@ Builds with Tailwindcss integrated
 - [ ] DaisyUI
 - Go
 - Live-Reload ([AIR](https://github.com/air-verse/air))
-- Environment Variables ([DotEnv](https://github.com/joho/godotenv))3
+- Environment Variables ([DotEnv](https://github.com/joho/godotenv))
 - HttpServer
 - Docker

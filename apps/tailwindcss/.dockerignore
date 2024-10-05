@@ -1,9 +1,12 @@
-README.md
-Makefile
-Dockerfile
-.*ignore
-*.toml
-.env**
+/build
+/tmp
+/node_modules
+/config/**local
 
-.build/
-build/
+.air.toml
+.gitignore
+.dockerignore
+Dockerfile
+package.json
+package-lock.json
+README.md

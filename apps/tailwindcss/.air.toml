@@ -1,20 +1,20 @@
 root = "."
 testdata_dir = "testdata"
-tmp_dir = ".build"
+tmp_dir = "tmp"
 
 [build]
   args_bin = []
-  bin = ".build\\main.exe"
-  cmd = "go build -o ./.build/main.exe ./app/."
+  bin = "tmp\\main.exe"
+  cmd = "make build MODE=live"
   delay = 1000
-  exclude_dir = ["build"]
-  exclude_file = []
+  exclude_dir = ["build", "tmp", "node_modules", "scripts"]
+  exclude_file = ["Dockerfile", ".gitignore", ".dockerignore", "Makefile", "package.json", "package-lock.json", "README.md"]
   exclude_regex = []
   exclude_unchanged = false
   follow_symlink = false
   full_bin = ""
-  include_dir = []
-  include_ext = ["go", "env", "development", "local", "production"]
+  include_dir = ["src", "config"]
+  include_ext = ["go"]
   include_file = []
   kill_delay = "0s"
   log = "./.build/air.log"

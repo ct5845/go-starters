@@ -1,13 +1,21 @@
-FROM golang AS base
+FROM node AS node-build
+WORKDIR /go_tailwindcss
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY . .
+RUN npx tailwindcss -i app/static/styles.css -o static/styles.min.css --minify
 
-FROM base AS build
-WORKDIR /go_docker_server
+FROM golang AS build
+WORKDIR /go_tailwindcss
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -o cmd ./app
+COPY --from=node-build /go_tailwindcss/static/. /go_tailwindcss/build/static/
+RUN CGO_ENABLED=0 GOOS=linux go build -o build/cmd ./app
 RUN ls -R
 
-FROM scratch AS run
-COPY --from=build /go_docker_server/cmd /go-docker-server
-CMD ["./go-docker-server"]
+# swap this out to FROM scratch
+FROM build AS run
+COPY --from=build /go_tailwindcss/build .
+RUN ls -R
+CMD ["./cmd"]
