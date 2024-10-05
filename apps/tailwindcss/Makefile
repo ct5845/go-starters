@@ -32,7 +32,7 @@ run:
 
 .PHONY:docker-build
 docker-build:
-	docker build -t go_starters/go_tailwindcss .
+	docker build --no-cache -t go_starters/go_tailwindcss .
 
 .PHONY:docker-run
 docker-run:
@@ -41,4 +41,4 @@ docker-run:
 
 .PHONY:preview
 preview: build
-	cd build && ./main.exe
+	build/main.exe

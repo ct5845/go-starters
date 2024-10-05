@@ -3,6 +3,7 @@
 This project essentially adds Tailwindcss to the project, but it covers a bit more ground then that;
 (1) Building the tailwindcss assets, in dev (with live-reloading covered), in prod (minified).
 (2) Serving via the embed, and how to deal with static routes.
+(3) Refactoring Makefile to use scripts, bit more flexibility.
 
 - Go
 - Live-Reload ([AIR](https://github.com/air-verse/air))
@@ -19,7 +20,7 @@ make install
 ```
 
 ### Run
-The live-reload app, defaults to `development` environment. Builds to `./build`.
+The live-reload app, defaults to `dev` environment. Builds to `/tmp`.
 ```bash
 make run
 ```
@@ -34,8 +35,6 @@ make build
 Runs a new docker build.
 ```bash
 make docker-build
-# or
-make docker-build FLAGS=--no-cache
 ```
 
 ### Docker Run
@@ -45,7 +44,7 @@ make docker-run
 ```
 
 ### Preview
-Runs the build, and then runs the app, defaults to `production` environment.
+Runs the build, and then runs the app, defaults to `prod` environment.
 ```bash
 make preview
 ```
