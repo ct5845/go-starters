@@ -57,14 +57,14 @@ func HeaderTemplate() *template.Template {
 func HeaderMolecule(active string) template.HTML {
 	header := Header{
 		Links: []Link{
-			Link{
+			{
 				Href: "/",
 				LinkLabel: LinkLabel{
 					Label:  "Home",
 					Active: active == "Home",
 				},
 			},
-			Link{
+			{
 				Href: "/about",
 				LinkLabel: LinkLabel{
 					Label:  "About",

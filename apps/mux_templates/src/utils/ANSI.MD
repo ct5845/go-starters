@@ -1,7 +1,5 @@
 	## ANSI Escape Codes
 
-
-
 ### Formatting
 
 | Format Name      | ANSI Code | Full ANSI Escape Sequence |
