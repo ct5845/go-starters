@@ -2,7 +2,7 @@
   "files.exclude": {
     ".vscode/": true,
     // "**/build/": true,
-    "**/tmp/": true,
-    "**/node_modules/": true
+    // "**/tmp/": true,
+    // "**/node_modules/": true
   }
 }

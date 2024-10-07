@@ -1,0 +1,51 @@
+root = "."
+testdata_dir = "testdata"
+tmp_dir = "tmp"
+
+[build]
+  args_bin = []
+  bin = "tmp\\main.exe"
+  cmd = "make build MODE=live"
+  delay = 1000
+  exclude_dir = ["build", "tmp", "node_modules", "scripts"]
+  exclude_file = ["Dockerfile", ".gitignore", ".dockerignore", "Makefile", "package.json", "package-lock.json", "README.md"]
+  exclude_regex = []
+  exclude_unchanged = false
+  follow_symlink = false
+  full_bin = ""
+  include_dir = ["src", "config"]
+  include_ext = ["go", "html"]
+  include_file = []
+  kill_delay = "0s"
+  log = "./.build/air.log"
+  poll = false
+  poll_interval = 0
+  post_cmd = []
+  pre_cmd = []
+  rerun = false
+  rerun_delay = 500
+  send_interrupt = false
+  stop_on_error = false
+
+[color]
+  app = "magenta"
+  build = "magenta"
+  main = "magenta"
+  runner = "magenta"
+  watcher = "magenta"
+
+[log]
+  main_only = false
+  time = false
+
+[misc]
+  clean_on_exit = true
+
+[proxy]
+  app_port = 8080
+  enabled = false
+  proxy_port = 8090
+
+[screen]
+  clear_on_rebuild = true
+  keep_scroll = true
