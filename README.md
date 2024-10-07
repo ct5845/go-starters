@@ -33,10 +33,11 @@ Combine previous two steps so we have a docker build for our HttpSever
 - Docker
 
 ### [tailwindcss](./tailwindcss)
-Builds with Tailwindcss integrated
+Builds with Tailwindcss integrated, using embed and static route handler to serve.
+Update to docker image to help serve this.
 
 - [x] Tailwindcss
-- [x] DaisyUI
+- [x] GO Embed & Static Routes
 - Go
 - Live-Reload ([AIR](https://github.com/air-verse/air))
 - Environment Variables ([DotEnv](https://github.com/joho/godotenv))
