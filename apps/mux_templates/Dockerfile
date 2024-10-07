@@ -1,5 +1,5 @@
 FROM node:lts AS build-css
-WORKDIR /go_tailwindcss
+WORKDIR /mux_templates
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
@@ -8,7 +8,7 @@ RUN make build-css
 #RUN ls -R
 
 FROM golang:1.23 AS build-go
-WORKDIR /go_tailwindcss
+WORKDIR /mux_templates
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
@@ -16,11 +16,11 @@ RUN CGO_ENABLED=0 make build-go
 #RUN ls -R
 
 FROM golang:1.23 AS dist
-WORKDIR /go_tailwindcss
-COPY --from=build-go /go_tailwindcss/build .
-COPY --from=build-css /go_tailwindcss/build .
+WORKDIR /mux_templates
+COPY --from=build-go /mux_templates/build .
+COPY --from=build-css /mux_templates/build .
 #RUN ls -R
 
 FROM scratch AS run
-COPY --from=dist /go_tailwindcss .
+COPY --from=dist /mux_templates .
 CMD ["./main"]

@@ -32,12 +32,12 @@ run:
 
 .PHONY:docker-build
 docker-build:
-	docker build --no-cache -t go_starters/go_tailwindcss .
+	docker build --no-cache -t go_starters/mux_templates .
 
 .PHONY:docker-run
 docker-run:
 	make docker-build
-	docker run -e PORT=4000 -p 4000:4000 go_starters/go_tailwindcss
+	docker run -e PORT=4000 -p 4000:4000 go_starters/mux_templates
 
 .PHONY:preview
 preview: build
