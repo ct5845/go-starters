@@ -1,4 +1,4 @@
-module open_api
+module insightful
 
 go 1.23.1
 
