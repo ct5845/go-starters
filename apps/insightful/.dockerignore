@@ -1,0 +1,10 @@
+/build
+/tmp
+/node_modules
+/config/**local
+
+.air.toml
+.gitignore
+.dockerignore
+Dockerfile
+README.md
