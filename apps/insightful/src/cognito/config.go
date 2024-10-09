@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"insightful/src/utils"
 	"log"
+	"sync"
 )
 
 type Config struct {
@@ -14,10 +15,9 @@ type Config struct {
 
 var config Config
 var configDebug = "\033[33mcognito/config.go\033[0m"
+var onceInitConfig sync.Once
 
-var UserPoolId = config.UserPoolId
-
-func init() {
+func initConfig() {
 	env := utils.LoadEnv()
 
 	region := env.AWSRegion
@@ -40,6 +40,8 @@ func init() {
 	}
 }
 
-func GetConfig() *Config {
-	return &config
+func GetConfig() Config {
+	onceInitConfig.Do(initConfig)
+
+	return config
 }

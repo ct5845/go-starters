@@ -2,6 +2,7 @@ package user_openapi
 
 import (
 	"context"
+	"insightful/src/user"
 	"net/http"
 
 	"github.com/danielgtaylor/huma/v2"
@@ -20,6 +21,14 @@ func WhatCanIDoRoute(api huma.API) {
 		DefaultStatus: http.StatusOK,
 		Tags:          []string{"User"},
 	}, func(ctx context.Context, input *WhatCanIDoRequest) (*WhatCanIDoResponse, error) {
-		return nil, nil
+		service := user.Context.UserService
+
+		whatcanido, err := service.WhatCanIDo()
+
+		if err != nil {
+			return nil, err
+		}
+
+		return &WhatCanIDoResponse{Body: whatcanido}, nil
 	})
 }

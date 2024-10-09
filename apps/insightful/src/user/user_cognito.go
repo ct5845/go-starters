@@ -16,7 +16,7 @@ type UserCognitoService struct{}
 
 var userCognitoService UserService
 
-func mapCognitoUser(user types.UserType, groups []string) User {
+func MapCognitoUser(user types.UserType, groups []string) User {
 	attributes := make(map[string]string)
 	for _, attr := range user.Attributes {
 		attributes[aws.ToString(attr.Name)] = aws.ToString(attr.Value)
@@ -45,7 +45,7 @@ func (us *UserCognitoService) addAttribute(attributes []types.AttributeType, nam
 func (us *UserCognitoService) ListUsers(filter string, includeGroups bool) ([]User, error) {
 	var users []User
 	input := &cognitoidentityprovider.ListUsersInput{
-		UserPoolId: aws.String(cognito.UserPoolId),
+		UserPoolId: aws.String(cognito.GetConfig().UserPoolId),
 	}
 
 	paginator := cognitoidentityprovider.NewListUsersPaginator(cognito.GetClient(), input)
@@ -69,7 +69,7 @@ func (us *UserCognitoService) ListUsers(filter string, includeGroups bool) ([]Us
 						return
 					}
 				}
-				mappedUser := mapCognitoUser(user, groups)
+				mappedUser := MapCognitoUser(user, groups)
 				if filter == "" || us.matchesFilter(mappedUser, filter) {
 					userChan <- mappedUser
 				} else {
@@ -95,12 +95,15 @@ func (us *UserCognitoService) ListUsers(filter string, includeGroups bool) ([]Us
 
 func (us *UserCognitoService) matchesFilter(user User, filter string) bool {
 	filter = strings.ToLower(filter)
-	return strings.Contains(strings.ToLower(user.Email), filter) || strings.Contains(strings.ToLower(user.Username), filter)
+
+	return strings.Contains(strings.ToLower(user.Email), filter) ||
+		strings.Contains(strings.ToLower(user.Username), filter) ||
+		strings.Contains(strings.ToLower(user.ID), filter)
 }
 
 func (us *UserCognitoService) listGroupsForUser(username string) ([]string, error) {
 	groupResp, err := cognito.GetClient().AdminListGroupsForUser(context.TODO(), &cognitoidentityprovider.AdminListGroupsForUserInput{
-		UserPoolId: aws.String(cognito.UserPoolId),
+		UserPoolId: aws.String(cognito.GetConfig().UserPoolId),
 		Username:   aws.String(username),
 	})
 	if err != nil {
@@ -114,17 +117,17 @@ func (us *UserCognitoService) listGroupsForUser(username string) ([]string, erro
 	return groups, nil
 }
 
-func (us *UserCognitoService) GetUser(idOrEmail string) (User, error) {
+func (us *UserCognitoService) GetUser(idOrEmail string) (*User, error) {
 	userOutput, err := cognito.GetClient().AdminGetUser(context.TODO(), &cognitoidentityprovider.AdminGetUserInput{
 		UserPoolId: aws.String(cognito.GetConfig().UserPoolId),
 		Username:   aws.String(idOrEmail),
 	})
 
 	if err != nil {
-		return User{}, fmt.Errorf("error getting user: %v", err)
+		return &User{}, fmt.Errorf("error getting user: %v", err)
 	}
 
-	user := types.UserType{
+	userType := types.UserType{
 		Username:             userOutput.Username,
 		UserStatus:           userOutput.UserStatus,
 		Enabled:              userOutput.Enabled,
@@ -133,22 +136,24 @@ func (us *UserCognitoService) GetUser(idOrEmail string) (User, error) {
 		Attributes:           userOutput.UserAttributes,
 	}
 
-	return mapCognitoUser(user, nil), nil
+	user := MapCognitoUser(userType, nil)
+
+	return &user, nil
 }
 
-func (us *UserCognitoService) WhoAmI() (User, error) {
+func (us *UserCognitoService) WhoAmI() (*User, error) {
 	// TODO get context of who user is from Auth
 
 	userOutput, err := cognito.GetClient().AdminGetUser(context.TODO(), &cognitoidentityprovider.AdminGetUserInput{
 		UserPoolId: aws.String(cognito.GetConfig().UserPoolId),
-		Username:   aws.String("ct5845@gmail.com"),
+		Username:   aws.String("cturner@alterian.com"),
 	})
 
 	if err != nil {
-		return User{}, fmt.Errorf("error getting user: %v", err)
+		return &User{}, fmt.Errorf("error getting user: %v", err)
 	}
 
-	user := types.UserType{
+	userType := types.UserType{
 		Username:             userOutput.Username,
 		UserStatus:           userOutput.UserStatus,
 		Enabled:              userOutput.Enabled,
@@ -157,30 +162,44 @@ func (us *UserCognitoService) WhoAmI() (User, error) {
 		Attributes:           userOutput.UserAttributes,
 	}
 
-	return mapCognitoUser(user, nil), nil
+	user := MapCognitoUser(userType, nil)
+
+	return &user, nil
 }
 
 func (us *UserCognitoService) WhatCanIDo() (*[]string, error) {
 	// TODO get context of who user is from Auth
 
-	return &[]string{}, nil
+	return &[]string{
+		"CreateGroup",
+		"CreateUser",
+		"DeleteGroup",
+		"DeleteUser",
+		"LinkPolicyTemplateToPrincipal",
+		"ListGroups",
+		"ListPolicyTemplates",
+		"ListUsers",
+		"ListWorkspaces",
+		"UnlinkPolicyTemplateFromPrincipal",
+		"UpdateGroup",
+		"UpdateUser",
+		"ViewAdmin",
+		"ViewAlpha",
+	}, nil
 }
 
-func (us *UserCognitoService) CreateUser(email, preferredUsername, accountName string) (User, error) {
-	if email == "" {
-		return User{}, fmt.Errorf("email is required")
-	}
-
+func (us *UserCognitoService) CreateUser(email, preferredUsername string) (*User, error) {
 	attributes := []types.AttributeType{
 		{Name: aws.String("email"), Value: aws.String(email)},
+		{Name: aws.String("preferred_username"), Value: &preferredUsername},
+		{Name: aws.String("email_verified"), Value: aws.String("True")},
 	}
 
-	attributes = us.addAttribute(attributes, "preferred_username", preferredUsername)
-	attributes = us.addAttribute(attributes, "custom:accountname", accountName)
-	attributes = append(attributes, types.AttributeType{Name: aws.String("email_verified"), Value: aws.String("True")})
+	// attributes = us.addAttribute(attributes, "preferred_username", preferredUsername)
+	// attributes = append(attributes, types.AttributeType{Name: aws.String("email_verified"), Value: aws.String("True")})
 
 	request := &cognitoidentityprovider.AdminCreateUserInput{
-		UserPoolId:             aws.String(cognito.UserPoolId),
+		UserPoolId:             aws.String(cognito.GetConfig().UserPoolId),
 		DesiredDeliveryMediums: []types.DeliveryMediumType{types.DeliveryMediumTypeEmail},
 		UserAttributes:         attributes,
 		Username:               aws.String(email),
@@ -188,23 +207,24 @@ func (us *UserCognitoService) CreateUser(email, preferredUsername, accountName s
 
 	resp, err := cognito.GetClient().AdminCreateUser(context.TODO(), request)
 	if err != nil {
-		return User{}, fmt.Errorf("error creating user: %v", err)
+		return &User{}, fmt.Errorf("error creating user: %v", err)
 	}
 
-	return mapCognitoUser(*resp.User, nil), nil
+	user := MapCognitoUser(*resp.User, nil)
+
+	return &user, nil
 }
 
-func (us *UserCognitoService) UpdateUser(idOrEmail, email, username, accountName string) error {
+func (us *UserCognitoService) UpdateUser(idOrEmail, email, username string) error {
 	var attributes []types.AttributeType
 
 	attributes = us.addAttribute(attributes, "email", email)
 	attributes = us.addAttribute(attributes, "email_verified", "True")
 	attributes = us.addAttribute(attributes, "preferred_username", username)
-	attributes = us.addAttribute(attributes, "custom:accountname", accountName)
 
 	if len(attributes) > 0 {
 		_, err := cognito.GetClient().AdminUpdateUserAttributes(context.TODO(), &cognitoidentityprovider.AdminUpdateUserAttributesInput{
-			UserPoolId:     aws.String(cognito.UserPoolId),
+			UserPoolId:     aws.String(cognito.GetConfig().UserPoolId),
 			Username:       aws.String(idOrEmail),
 			UserAttributes: attributes,
 		})
@@ -218,7 +238,7 @@ func (us *UserCognitoService) UpdateUser(idOrEmail, email, username, accountName
 
 func (us *UserCognitoService) DeleteUser(idOrEmail string) error {
 	_, err := cognito.GetClient().AdminDeleteUser(context.TODO(), &cognitoidentityprovider.AdminDeleteUserInput{
-		UserPoolId: aws.String(cognito.UserPoolId),
+		UserPoolId: aws.String(cognito.GetConfig().UserPoolId),
 		Username:   aws.String(idOrEmail),
 	})
 
@@ -231,7 +251,7 @@ func (us *UserCognitoService) DeleteUser(idOrEmail string) error {
 
 func (us *UserCognitoService) EnableUser(username string) error {
 	input := &cognitoidentityprovider.AdminEnableUserInput{
-		UserPoolId: aws.String(cognito.UserPoolId),
+		UserPoolId: aws.String(cognito.GetConfig().UserPoolId),
 		Username:   aws.String(username),
 	}
 
@@ -244,7 +264,7 @@ func (us *UserCognitoService) EnableUser(username string) error {
 
 func (us *UserCognitoService) DisableUser(username string) error {
 	input := &cognitoidentityprovider.AdminDisableUserInput{
-		UserPoolId: aws.String(cognito.UserPoolId),
+		UserPoolId: aws.String(cognito.GetConfig().UserPoolId),
 		Username:   aws.String(username),
 	}
 

@@ -20,12 +20,18 @@ run:
 
 .PHONY:docker-build
 docker-build:
-	docker build --no-cache -t go_starters/openapi .
+	docker build -t go_starters/insightful .
 
 .PHONY:docker-run
 docker-run:
 	make docker-build
-	docker run -e PORT=8888 -p 8888:8888 go_starters/openapi
+	cat ./config/.env ./config/.env.local > ./config/.env.docker.local
+	docker run --env-file ./config/.env.local \
+		-e PORT=8888 \
+		-p 8888:8888 \
+		-v ${HOME}/.aws:/root/.aws:ro \
+		go_starters/insightful
+	rm ./config/.env.docker.local
 
 .PHONY:preview
 preview: build
